@@ -12,12 +12,6 @@ $topic_resolve_width: 13px;
 $sections_vertical_gutter: 8px;
 $bottom_scrolling_buffer: 25px;
 
-#left-sidebar {
-    #user-list {
-        padding-left: 10px;
-    }
-}
-
 .hashtag {
     &:empty {
         &::after {
@@ -101,6 +95,16 @@ li.show-more-topics {
     padding: 0;
     font-weight: normal;
 
+    .input-append.topic_search_section {
+        padding: 2px 0 2px calc($topic_indent - $topic_resolve_width);
+        margin-bottom: 3px;
+        margin-left: 3px;
+
+        input {
+            width: calc(100% - 50px);
+        }
+    }
+
     li {
         a {
             padding: 1px 0;
@@ -119,19 +123,9 @@ li.show-more-topics {
                 &.filter-topics {
                     padding-bottom: 0;
                     position: sticky;
-                    top: 43px;
+                    top: calc($sections_vertical_gutter + 43px);
                     z-index: 2;
                     background-color: hsl(0, 0%, 100%);
-                }
-
-                .input-append.topic_search_section {
-                    margin-bottom: 3px;
-                    margin-left: 3px;
-
-                    input {
-                        padding-right: 20px;
-                        width: calc(100% - 50px);
-                    }
                 }
             }
         }
@@ -228,7 +222,7 @@ li.show-more-topics {
 
     #private_messages_section_header {
         cursor: pointer;
-        padding: 0 10px 1px 4px;
+        padding: 0 10px 1px 6px;
         white-space: nowrap;
 
         #show_all_private_messages {
@@ -322,6 +316,7 @@ li.show-more-topics {
     }
 }
 
+#login-link-container,
 #subscribe-to-more-streams {
     text-decoration: none;
     margin: 5px auto 5.5px 10px;
@@ -381,6 +376,7 @@ li.active-sub-filter {
     .topic-list .filter-topics,
     > .bottom_left_row {
         background-color: hsl(202, 56%, 91%);
+        border-radius: 4px;
     }
 }
 
@@ -572,16 +568,6 @@ li.topic-list-item {
     padding-right: 5px;
 }
 
-.show-all-streams {
-    a {
-        color: hsl(0, 0%, 20%);
-    }
-
-    .fa-chevron-left {
-        text-decoration: none;
-    }
-}
-
 .pm-box,
 .topic-box {
     display: flex;
@@ -627,12 +613,14 @@ li.topic-list-item {
     background-color: hsl(0, 0%, 100%);
     z-index: 2;
     margin-right: 10px;
+    padding-top: $sections_vertical_gutter;
     color: hsl(0, 0%, 43%);
 
-    a {
+    .show-all-streams {
         color: inherit;
         text-decoration: none;
         text-transform: uppercase;
+        margin-left: calc($far_left_gutter_size + 2px);
 
         i {
             margin: 0 6px 0 13px;
@@ -645,9 +633,11 @@ li.topic-list-item {
 #streams_header {
     margin-right: 12px;
     cursor: pointer;
-    padding: $sections_vertical_gutter 0 3px $far_left_gutter_size;
+    padding: $sections_vertical_gutter 0 3px calc($far_left_gutter_size + 2px);
     position: sticky;
-    top: 0;
+    /* Ideally, 0px should work here, but maybe simplebar is doing something
+       that is creating `0.5px` extra gap in zoomed-in windows. */
+    top: -0.5px;
     background: hsl(0, 0%, 100%);
     z-index: 1;
 
@@ -719,12 +709,13 @@ li.topic-list-item {
 .zoom-in {
     .narrow-filter > .bottom_left_row {
         position: sticky;
-        top: 20px;
+        top: calc($sections_vertical_gutter + 20px);
         z-index: 2;
         padding-bottom: 1px;
         background-color: hsl(0, 0%, 100%);
     }
 
+    #subscribe-to-more-streams,
     .show-more-topics {
         display: none;
     }

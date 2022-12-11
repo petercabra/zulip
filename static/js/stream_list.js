@@ -1,6 +1,7 @@
 import $ from "jquery";
 import _ from "lodash";
 
+import render_filter_topics from "../templates/filter_topics.hbs";
 import render_stream_privacy from "../templates/stream_privacy.hbs";
 import render_stream_sidebar_row from "../templates/stream_sidebar_row.hbs";
 import render_stream_subheader from "../templates/streams_subheader.hbs";
@@ -141,11 +142,19 @@ export function build_stream_list(force_rerender) {
     topic_list.clear();
     $parent.empty();
 
-    const any_pinned_streams = stream_groups.pinned_streams.length > 0;
-    const any_normal_streams = stream_groups.normal_streams.length > 0;
+    const any_pinned_streams =
+        stream_groups.pinned_streams.length > 0 || stream_groups.muted_pinned_streams.length > 0;
+    const any_normal_streams =
+        stream_groups.normal_streams.length > 0 || stream_groups.muted_active_streams.length > 0;
     const any_dormant_streams = stream_groups.dormant_streams.length > 0;
 
-    if (any_pinned_streams) {
+    const need_section_subheaders =
+        (any_pinned_streams ? 1 : 0) +
+            (any_normal_streams ? 1 : 0) +
+            (any_dormant_streams ? 1 : 0) >=
+        2;
+
+    if (any_pinned_streams && need_section_subheaders) {
         elems.push(
             render_stream_subheader({
                 subheader_name: $t({
@@ -163,7 +172,7 @@ export function build_stream_list(force_rerender) {
         add_sidebar_li(stream_id);
     }
 
-    if (any_normal_streams) {
+    if (any_normal_streams && need_section_subheaders) {
         elems.push(
             render_stream_subheader({
                 subheader_name: $t({
@@ -181,7 +190,7 @@ export function build_stream_list(force_rerender) {
         add_sidebar_li(stream_id);
     }
 
-    if (any_dormant_streams) {
+    if (any_dormant_streams && need_section_subheaders) {
         elems.push(
             render_stream_subheader({
                 subheader_name: $t({
@@ -265,20 +274,17 @@ export function zoom_in_topics(options) {
 
         if (stream_id_for_elt($elt) === stream_id) {
             $elt.show();
+            // Add search box for topics list.
+            $elt.children("div.bottom_left_row").append(render_filter_topics());
+            $("#filter-topic-input").trigger("focus");
+            $("#clear_search_topic_button").hide();
         } else {
             $elt.hide();
         }
     });
-
-    // we also need to hide the PM section and allow
-    // stream list to take complete left-sidebar in zoomedIn view.
-    $(".private_messages_container").hide();
 }
 
 export function zoom_out_topics() {
-    // Show PM section
-    $(".private_messages_container").show();
-
     // Show stream list titles and pinned stream splitter
     $(".stream-filters-label").each(function () {
         $(this).show();
@@ -289,6 +295,8 @@ export function zoom_out_topics() {
 
     $("#streams_list").expectOne().removeClass("zoom-in").addClass("zoom-out");
     $("#stream_filters li.narrow-filter").show();
+    // Remove search box for topics list from DOM.
+    $(".filter-topics").remove();
 }
 
 export function set_in_home_view(stream_id, in_home) {
